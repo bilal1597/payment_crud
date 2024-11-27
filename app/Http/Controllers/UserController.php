@@ -200,11 +200,16 @@ class UserController extends Controller
             // $customer = $stripe->customers->retrieve($session->customer);
 
             $guest = $session->customer_details;
+            $order = Order::where('session_id', $session->id)->where('status', 'unpaid')->first();
+            if (!$order) {
+                throw new NotFoundHttpException();
+            }
+            $order->status = 'paid';
+            $order->save();
+            return view('checkout_success', compact('guest'));
         } catch (\Exception $th) {
             throw new NotFoundHttpException();
         }
-
-        return view('checkout_success', compact('guest'));
     }
 
 
