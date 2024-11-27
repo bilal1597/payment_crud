@@ -36,7 +36,7 @@
                         <td>{{$loop ->iteration}} </td>
                         <td>{{$item ->product_name}} </td>
                         <td>{{$item ->details}} </td>
-                        <td>{{$item ->price}}</td>
+                        <td>${{$item ->price}}</td>
 
                         <td> <a class="btn  btn-info" href="{{route('view.product',$item->id)}}">Edit</a></td>
                         <td> <form action="{{route('delete.product', $item ->id)}}" method="POST">

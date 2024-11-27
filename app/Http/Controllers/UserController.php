@@ -7,7 +7,10 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Stmt\TryCatch;
 use Stripe\LineItem;
+use Stripe\Stripe;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserController extends Controller
 {
@@ -164,12 +167,13 @@ class UserController extends Controller
                 ];
         }
 
+
         // $session = $stripe->checkout->sessions->create([
         $session = \Stripe\Checkout\Session::create([
             'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => route('checkout.success', [], true),
-            'cancel_url' => route('checkout.cancel', [], true),
+            'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('checkout.cancel'),
         ]);
 
         $order = new Order();
@@ -181,7 +185,29 @@ class UserController extends Controller
         return redirect($session->url);
     }
 
-    public function success() {}
+    public function success(Request $request)
+    {
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET_KEY'));
+
+        $sessionId = $request->get('session_id');
+
+        try {
+            $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+            if (!$session) {
+                throw new NotFoundHttpException;
+            }
+            // $customer = $stripe->customers->retrieve($session->customer);
+
+            $guest = $session->customer_details;
+        } catch (\Exception $th) {
+            throw new NotFoundHttpException();
+        }
+
+        return view('checkout_success', compact('guest'));
+    }
+
+
 
     public function cancel() {}
 }
