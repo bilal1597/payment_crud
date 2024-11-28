@@ -5,7 +5,7 @@
     <h3>{{$guest->name}} </h3>
     <p>
       We appreciate your business!
-      If you have any questions, please email
+      If you have any questions, please email <br>
       <a href="mailto:orders@example.com">orders@example.com</a>.
     </p>
   </body>

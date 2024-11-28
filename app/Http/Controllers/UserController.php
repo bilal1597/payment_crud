@@ -197,6 +197,7 @@ class UserController extends Controller
             if (!$session) {
                 throw new NotFoundHttpException;
             }
+
             // $customer = $stripe->customers->retrieve($session->customer);
 
             $guest = $session->customer_details;
